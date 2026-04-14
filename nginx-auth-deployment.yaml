@@ -1,0 +1,73 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-auth
+  labels:
+    app: nginx-auth
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-auth
+  template:
+    metadata:
+      labels:
+        app: nginx-auth
+    spec:
+      imagePullSecrets:
+        - name: acr-cred
+      containers:
+        - name: nginx-auth
+          image: crpi-bi3rntk3rk9jl7iw.cn-beijing.personal.cr.aliyuncs.com/l_demo/nginx-auth:latest
+          imagePullPolicy: Always
+          env:
+            - name: GIN_MODE
+              value: release
+          ports:
+            - name: http
+              containerPort: 8080
+          readinessProbe:
+            httpGet:
+              path: /auth
+              port: 8080
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 2
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /auth
+              port: 8080
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 200m
+              memory: 128Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsNonRoot: true
+            capabilities:
+              drop:
+                - ALL
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-auth
+  labels:
+    app: nginx-auth
+spec:
+  type: ClusterIP
+  selector:
+    app: nginx-auth
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
