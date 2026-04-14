@@ -22,15 +22,12 @@ func main() {
 		// 例如：如果客户端请求带了特定的灰度测试 Header X-Test-Gray，则判定为灰度用户
 		isGrayUser := true
 
-		cookieName := "canary"
-		cookieValue := "never"
 		grayHeaderValue := "false"
 		if isGrayUser {
-			cookieValue = "always"
+
 			grayHeaderValue = "true"
 		}
 
-		c.SetCookie(cookieName, cookieValue, 3600, "/", "", false, true)
 		c.Header("X-Gray-Env", grayHeaderValue)
 
 		// 鉴权成功，必须返回 200 或其他 2xx 状态码，Nginx 才会放行请求
