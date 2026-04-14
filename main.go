@@ -22,15 +22,16 @@ func main() {
 		// 例如：如果客户端请求带了特定的灰度测试 Header X-Test-Gray，则判定为灰度用户
 		isGrayUser := true
 
-		// Nginx 的 auth_request 模块只看状态码
-		// 但如果我们在响应头中返回内容，Nginx 可以通过 auth_request_set 提取它并传给后端
+		cookieName := "canary"
+		cookieValue := "never"
+		grayHeaderValue := "false"
 		if isGrayUser {
-			// 如果是灰度用户，设置灰度标识 Header
-			c.Header("X-Gray-Env", "true")
-		} else {
-			// 如果不是灰度用户，可以设置成普通标识或不设置
-			c.Header("X-Gray-Env", "false")
+			cookieValue = "always"
+			grayHeaderValue = "true"
 		}
+
+		c.SetCookie(cookieName, cookieValue, 3600, "/", "", false, true)
+		c.Header("X-Gray-Env", grayHeaderValue)
 
 		// 鉴权成功，必须返回 200 或其他 2xx 状态码，Nginx 才会放行请求
 		c.Status(http.StatusOK)
