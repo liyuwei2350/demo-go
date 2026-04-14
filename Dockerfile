@@ -1,5 +1,5 @@
 # 构建器
-FROM golang:1.22-alpine AS builder
+FROM golang:1.26-alpine AS builder
 WORKDIR /app
 
 # 安装 git
