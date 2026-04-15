@@ -22,13 +22,12 @@ func main() {
 		// 例如：如果客户端请求带了特定的灰度测试 Header X-Test-Gray，则判定为灰度用户
 		isGrayUser := true
 
-		grayHeaderValue := "false"
 		if isGrayUser {
 
-			grayHeaderValue = "true"
-		}
+			grayHeaderValue := "gray"
+			c.Header("X-Gray-Env", grayHeaderValue)
 
-		c.Header("X-Gray-Env", grayHeaderValue)
+		}
 
 		// 鉴权成功，必须返回 200 或其他 2xx 状态码，Nginx 才会放行请求
 		c.Status(http.StatusOK)
