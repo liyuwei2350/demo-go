@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: small-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: small-app
+  template:
+    metadata:
+      labels:
+        app: small-app
+    spec:
+      containers:
+        - name: small-app
+          image: busybox:latest  # 使用超小的 busybox 镜像
+          command: ["sleep", "3600"]  # 让容器持续运行，保持活动状态
